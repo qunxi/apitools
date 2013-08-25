@@ -1,0 +1,43 @@
+<script type="text/javascript">
+<!--
+$(document).ready(function(){
+	$('#catalog').change(function(){
+		var url = '/apitools/ApiTools/crawl/' + $(this).val();
+		$.getJSON(url, {'catalog': $(this).find("option:selected").text(), 'type': $(this).val()}, function(data){
+			var options = '';
+			$.each(data, function(index, api){
+				options += '<option value="' + api.url + '">' + api.name + '</option>';
+				});
+			$('#api').html(options);
+			});
+		});//end catalog select
+		
+	$('#submit').click(function(){
+		var url = '/apitools/ApiTools/crawl/insert';
+		$.getJSON(url, {'catalog': $('#catalog').find("option:selected").text(), 
+						'api': $('#api').find("option:selected").text(),
+						'url': $('#api').val(),
+						'provider':$('#catalog').val()}, function(data){
+							$('#debug').html(JSON.stringify(data));
+							});
+		alert('ok');
+		});
+});
+//-->
+</script>
+
+<select id="catalog">
+	<?php foreach ($this->summary as $key => $catalogs ){ ?>
+		    <?php foreach ($catalogs as $kCatalog => $vCatalog) {?>
+		    <option value="<?php echo $this->escape($key)?>"><?php echo $this->escape($kCatalog);?></option>
+	<?php } }?>
+</select>
+<select id="api">
+	<?php foreach ($this->summary as $catalogs) {
+        	    foreach ($catalogs as $key=> $value) {
+        			foreach ($value as $api){?>
+        				<option value="<?php echo $this->escape($api['url']);?>"><?php echo $this->escape($api['name']);?></option>
+  <?php }break; }}?>	
+</select>
+<a id="submit" href="#">提交</a>
+<div id="debug"></div>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	     <?php echo $this->headLink()->appendStylesheet( $this->baseUrl() . '/public/css/api.css', 'screen', true)
+	    					         ->headLink(array('rel' => 'favicon', 'href' => $this->baseUrl() . '/public/images/fav.ico'), 'PREPEND')
+	    					         ->appendStylesheet( $this->baseUrl() . '/public/jscripts/jquery/css/jquery-ui-1.8.16.custom.css', 
+												    'screen',  true);?>
+	    
+	    <?php echo $this->headScript()->appendFile( $this->baseUrl() . '/public/jscripts/jquery/jquery-1.6.2.min.js')
+	    							  ->appendFile( $this->baseUrl() . '/public/jscripts/jquery/jquery-ui-1.8.16.custom.min.js')?>
+    <style>
+    <!--
+    #content{
+    	/*margin-left: auto;
+    	margin-right: auto;*/
+    	margin: 0 auto;
+    	width: 960px;
+    }
+    -->
+    </style>					
+	</head>
+	<body>
+		<div id="header">
+			<div id="site_nav">
+			    <a href="<?php echo $this->baseUrl() .'/'?>">主页</a>
+			</div>
+			<div id="top_header"></div>
+			<div id="top_nav"></div>
+		</div>
+		<div id="content">
+			<div>
+				<?php echo $this->layout()->content?>
+			</div>
+		    <div style="clear: both"></div>
+		</div>
+        <!-- <div id="footer">
+			<div id="statement" class="container_16">copyright</div> 
+		</div>-->
+	</body>
+</html>
+

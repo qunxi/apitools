@@ -1,0 +1,44 @@
+<br /><br />
+<div id="view-content">
+	<p>View script for controller <b>Crawl</b> and script/action name <b>index</b></p>
+</div>
+<script type="text/javascript">
+<!--
+$(document).ready(function(){
+	$('#bCatalog').change(function(){
+		var url = '/GoodMgr/index.php/ApiTools/crawl';
+		$.getJSON(url, {'catalog': $(this).val()}, function(data){
+			var options = '';
+			$.each(data, function(index, api){
+				options += '<option value="' + api.url + '">' + api.name + '</option>';
+				//alert(options);
+				});
+			$('#Api').html(options);
+			});
+		});//end catalog select
+	$('#submit').click(function(){
+		var url = '/GoodMgr/index.php/ApiTools/crawl/insert';
+		$.getJSON(url, {'catalog': $('#bCatalog').find("option:selected").text(), 
+						'api': $('#Api').find("option:selected").text(),
+						'url': $('#Api').val()}, function(data){
+							$('#d').html(JSON.stringify(data));
+							});
+		alert('ok');
+		});
+});
+//-->
+</script>
+<select id="bCatalog">
+	<?php foreach ($this->api as $key => $value){?>
+			<option><?php echo $this->escape($key)?></option>
+	<?php }?>
+</select>
+<select id="Api">
+	<?php foreach ($this->api as $key => $value) {
+				foreach ($value as $i => $j) {?>
+		<option value="<?php echo $this->escape($j)?>"><?php echo $this->escape($i)?></option>
+	<?php }break;}?>
+</select>
+<a id="submit" href="#">提交</a>
+<div id="d"></div>
+<a href="<?php echo $this->escape($this->url)?>">fsfsf</a>

@@ -1,0 +1,3 @@
+handle:
+- directoryindex: index.php
+- rewrite: if(!is_file()) goto "index.php"

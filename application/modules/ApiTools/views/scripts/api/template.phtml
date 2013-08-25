@@ -1,0 +1,131 @@
+<script type="text/javascript">
+<!--
+	$(document).ready(function(){
+		$('#catalog_select').change(function(){
+			var url = '/ApiTools/Api/switch';
+			//var url = '/apitools/ApiTools/Api/switch';//. $('provider_name').val();
+			$.getJSON(url,{'provider': $('#provider_name').val(), 'catalog': $(this).val()},function(data){
+				var options = '';
+				$('#api_desc').html(data[0].api_desc);
+				$.each(data, function(index, api){
+					options += '<option value="' + api.id + '">' + api.name + '</option>';
+					});
+				$('#api_select').html(options);
+				});
+			});//end catalog select
+
+		$('#api_select').change(function(){
+			var url = '/ApiTools/Api/switch';
+			//var url = '/apitools/ApiTools/Api/switch';
+			$.getJSON(url, {'provider': $('#provider_name').val(), 'api': $(this).val()}, function(data){
+				$('#api_desc').html(data.api_desc);
+				var param_html = '';
+				$.each(data.param_names, function(index, name){
+					param_html+='<div class="param_item">' +
+						'<div class="param_name">' + name +'</div>' +
+						'<div class="param_value"><input type="text" name="' + name +'"/></div>' +
+						'<div class="param_desc">'+ data.param_desc[index] +'</div>' +
+					'</div>';
+					});
+    				$('.param_item').remove();
+    				$(param_html).appendTo($('#param_content'));
+				});
+		}); // end api select
+
+		$('.param_item_head a').toggle(
+						function(){ $(this).text('▼'); $('#param_content').toggle(); },
+						function(){ $(this).text('▲'); $('#param_content').toggle(); });
+
+		$('#send_btn').click(function(){
+				var url = '/ApiTools/Api/execute';
+				//var url = '/apitools/ApiTools/Api/execute';
+				params = 'api=' + $('#api_select').find("option:selected").text();
+				params += '&method=' + $('#http_type').text();
+				params +='&' + $('#apiform').serialize();
+				//alert(params);
+				$.post(url, params, function(data){
+						if(data.url){
+							//alert(data.url);
+							window.location= data.url;
+							}
+						else{
+							//alert(data);
+							$('#api_response').text(JSON.stringify(data.response, null, '\t'));
+							//$('#api_response').text(pretty_json(JSON.stringify(data.response)));
+							$('#api_request').text(JSON.stringify(data.request));
+							}
+					});
+			});
+	});//end document ready
+
+//-->
+</script>
+<div>
+	<form method="post" id="apiform">
+	    <input name = "provider_name" id="provider_name" type="hidden" value="<?php echo $this->escape($this->provider)?>">
+		<div id="provider_catalog">
+			<label for="catalog_select">目录</label>
+			<select id="catalog_select">
+				<?php 
+					foreach ( $this->apiList->catalogs as $catalog) {?>
+					<option value="<?php echo $this->escape($catalog['id'])?>"><?php echo $this->escape($catalog['name'])?></option>
+				<?php }?>
+			</select>
+		</div>
+		<div id="provider_api">
+			<label for="api_select">API</label>
+			<select id="api_select">
+				<?php foreach ($this->apiList->apis as $api){?>
+					<option value="<?php echo $this->escape($api['id'])?>"><?php echo $this->escape($api['name'])?></option>
+				<?php }?>
+			</select>
+			<div id="http_type"><?php 
+    			switch ($this->apiList->apis[0]['method']) {
+    			    case 0:
+        			    echo "GET";
+        			    break;
+    			    case 1:
+    			        echo "POST";
+    			        break;
+    			}?></div>
+			<div id="api_desc">
+			    <?php echo $this->escape($this->apiList->apis[0]['api_desc'])?>
+			</div>
+			
+			<div id="api_param">
+				<div class="param_item_head">
+					<div class="param_name_head">参数名</div>
+					<div class="param_value_head">参数值</div>
+					<div class="param_desc_head">注释</div>
+					<a href="#">▲</a>
+				</div>
+				<div id="param_content">
+				<?php $i = 0; foreach ($this->apiList->apiDetails['param_names'] as $param) {?>
+				<div class="param_item">
+					<div class="param_name"><?php echo $this->escape($param)?></div>
+					<div class="param_value"><input type="text" name="<?php echo $this->escape($param)?>"/></div>
+		
+					<!-- <div class="param_desc"><?php echo $this->escape($this->apiList->apiDetails['param_desc'][$i])?></div>-->
+					<div class="param_desc"><?php echo $this->apiList->apiDetails['param_desc'][$i];?></div>
+				</div>
+				<?php $i++; }?>
+				</div>
+			</div>			
+		</div>
+		<div id="api_send">
+			<a id="send_btn">获得结果</a>
+		</div>
+		<div id="result">
+			<div class="api_result">
+				<div class="result_title">API请求</div>
+				<div id="api_request"></div>
+			</div>
+			<div class="api_result">
+				<div class="result_title">API结果</div>
+				<!-- <textarea id="api_response"></textarea>-->
+				<div id="api_response"></div>
+			</div>
+		</div>
+		<a href="/apitools/ApiTools/Api/index">格式化json</a>
+	</form>
+</div>
